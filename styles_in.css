@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+    .switch {
+        @apply relative inline-block w-[60px] h-[34px]
+    }
+    .switch input {
+        @apply opacity-0 w-0 h-0
+    }
+    .slider {
+        @apply absolute cursor-pointer top-0 left-0 right-0 bottom-0 bg-gray-600 duration-[0.5s]
+           before:absolute before:content-[""] before:w-[26px] before:h-[26px] before:left-[4px] before:bottom-[4px] before:bg-gray-500 before:duration-[0.5s]
+    }
+    input:checked+.slider {
+        @apply bg-green-800 before:translate-x-[26px] focus:shadow-lg shadow-white
+    }
+}
+
+

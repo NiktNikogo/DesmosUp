@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <link rel="stylesheet" href="styles_out.css" />
+  <style type="text/css" media="screen">
+    #editor {
+      position: relative;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      height: 90vh;
+      overflow: hidden;
+      display: none;
+    }
+  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vite App</title>
+</head>
+
+<body>
+  <script src="https://www.desmos.com/api/v1.7/calculator.js?apiKey=dcb31709b452b1cf9dc26972add0fda6"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.8.1/ace.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.8.1/ext-language_tools.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vm2@3.9.10/index.min.js" ></script>
+  <div class="flex flex-row bg-slate-800">
+    <div id="calc" class="w-[70vw] h-screen"></div>
+    <div id="side" class="w-[30vw] mx-3 my-2 max-h-[100vh] border-2 border-solid border-gray-400">
+      <div id="credits" class="font-bold text-gray-500">
+        Syntax highlighting thanks to CodeMirror! <br>
+        If CORS isn't allowing to use OEIS than I recommend this extension: <br>
+        <a href="https://chrome.google.com/webstore/detail/allow-cors-access-control/lhobafahddgcelffkeicbaginigeejlf" >Allow CORS: Access-Control-Allow-Origin</a>
+      </div>
+      <div class="my-1">
+        <span id="mode-switch-off" class="text-green-400">Math</span>
+        <label for="mode-switch" class="switch">
+          <input id="mode-switch" name="mode-switch" type="checkbox">
+          <span class="slider"></span>
+        </label>
+        <span id="mode-switch-on" class="text-red-400">
+          Coding
+          <button id="run-btn" class="hidden font-bold">RUN</button>
+        </span>
+      </div>
+      <form id="math" class="text-gray-400">
+        Adding sequence: <input type="checkbox" id="adding-sequence-check"> <br>
+        <div id="adding-sequence" class="hidden">
+          <label for="seq_id">Sequence id and hex value:</label><br>
+          <input class="bg-slate-900 text-gray-400" type="text" id="seq_id" name="seq_id" placeholder="A000027">
+          <input class="bg-slate-900 text-gray-400" type="text" id="seq_hex" name="seq_hex" placeholder="#4B1D00"><br>
+
+
+          <label for="seq_min">Starting index:</label><br>
+          <input class="bg-slate-900 text-gray-400" type="text" id="seq_min" name="seq_min" placeholder="0"><br>
+
+          <label for="seq_max">Ending index:</label><br>
+          <input class="bg-slate-900 text-gray-400" type="text" id="seq_max" name="seq_max" placeholder="10">
+
+          <input type="submit" id="seq-btn" value="Submit"
+            class="text-black border-2 border-solid shadow-lg border-gray-500 bg-gray-400"><br>
+        </div>
+        Transformations: <input type="checkbox" id="transforms-check"> <br>
+        <div id="transforms" class="hidden">
+          <label for="trans-id">Original sequence id and hex value:</label><br>
+          <input class="bg-slate-900 text-gray-400" type="text" id="trans-id" name="trans-id" placeholder="A000027">
+          <input type="submit" id="transform-btn" value="Submit"
+            class="text-black border-2 border-solid shadow-lg border-gray-500 bg-gray-400"><br>
+
+          <label>(b_n)Add logarithmic: log_b(a_n)</label>
+          <input type="checkbox" id="seq_log"><br>
+
+          <label>(c_n)Add altenating: (a_n)*(-1)^n</label>
+          <input type="checkbox" id="seq_alt"><br>
+
+          <label>(d_n)Add exponent: (a_n)^c</label>
+          <input type="checkbox" id="seq_exp"><br>
+
+          <label>(e_n)Add scaling: (a_n)*m</label>
+          <input type="checkbox" id="seq_mul"><br>
+
+          <label>(f_n)Add offset: a_n + l</label>
+          <input type="checkbox" id="seq_add"><br>
+
+          <label>(g_n)Add harmonic: a_n / n!</label>
+          <input type="checkbox" id="seq_har"><br>
+
+          <label>(h_n)Add powering: t^(a_n)</label>
+          <input type="checkbox" id="seq_pow"><br>
+
+          <label>(i_n)Add modulo k: a_n mod k</label>
+          <input type="checkbox" id="seq_mod"><br>
+
+          <label>(j_n)Add accumulative seq: A_n = a_0 + a_1 + ... + a_n</label>
+          <input type="checkbox" id="seq_acc"><br>
+        </div>
+        Actions: <input type="checkbox" id="actions-check"> <br>
+        <div id="actions" class="hidden">
+          <label for="action-id">Original sequence id and hex value:</label><br>
+          <input class="bg-slate-900 text-gray-400" type="text" id="action-id" name="action-id" placeholder="A000027">
+          <input type="submit" id="action-btn" value="Submit"
+            class="text-black border-2 border-solid shadow-lg border-gray-500 bg-gray-400"><br>
+
+          <label>(f(x))Add polynomial: f(x) = A_0 + A_1*x + ..., A_i = a_i</label>
+          <input type="checkbox" id="seq_pol"><br>
+
+          <label>(g(x))Add polynomial: g(x) = A_0 + A_1*x + ..., A_i = a_i/max{a_n}</label>
+          <input type="checkbox" id="seq_pmx"><br>
+
+          <label>(h(x))Add polynomial: h(x) = (x-a_0)(x-a_1)...</label>
+          <input type="checkbox" id="seq_rot"><br>
+
+          <label>(k(x))Add polynomial: k(x) = (1 - x/a_0)(1-x/a_1)...</label>
+          <input type="checkbox" id="seq_nrt"><br>
+
+          <label>(p(x))Add polynomial: p(x) = A_0 + A_1*x + ..., Ai = a_i/i!</label>
+          <input type="checkbox" id="seq_dec"><br>
+        </div>
+        Sequences: <input type="checkbox" id="sequences-list-check"> <br>
+        <div id="list" class="hidden">
+          <ul class="overflow-hidden overflow-y-scroll h-16 w-[50%]" id="sequencesList">
+          </ul>
+        </div>
+        Combine sequences: <input type="checkbox" id="combine-sequences-check"> <br>
+        <div id="combine" class="hidden">
+          <div class="grid grid-cols-4 gap-x-15  w-[100%]">
+            <label for="seq_x_id">SequenceX id: </label>
+            <label for="seq_y_id">SequenceY id: </label>
+            <label for="comb_seq_id">Combined sequence id: </label>
+            <label for="comb_seq_hex">hex value: </label>
+            <input class="bg-slate-900 text-gray-400 w-32" type="text" id="seq_x_id" name="seq_x_id"
+              placeholder="A000027_a{n}">
+            <input class="bg-slate-900 text-gray-400 w-32" type="text" id="seq_y_id" name="seq_y_id"
+              placeholder="A000040_a{n}">
+            <input class="bg-slate-900 text-gray-400 w-32" type="text" id="comb_seq_id" name="comb_seq_id"
+              placeholder="">
+            <input class="bg-slate-900 text-gray-400 w-32" type="text" id="comb_seq_hex" name="comb_seq_hex"
+              placeholder="#DEAD00">
+          </div>
+          <input type="submit" id="combine-submit-btn" value="Submit"
+            class="text-black border-2 border-solid shadow-lg border-gray-500 bg-gray-400"><br>
+        </div>
+      </form>
+      <div id="editor"></div>
+    </div>
+  </div>
+  <script src="main.js" type="module"></script>
+  <iframe id="targetFrame"></iframe>
+</body>
+
+</html>
