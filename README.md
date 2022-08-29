@@ -1,6 +1,11 @@
 # DesmosUp
 
 DesmosUp is a project about adding some cool functionality to Desmos based around OEIS and sequences.
+You need vite to run this project, after that run
+```
+npm run dev
+```
+in your project directory
 
 ## Main features are:
 - Ability to add a sequence from OEIS by giving their index
